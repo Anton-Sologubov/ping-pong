@@ -1,0 +1,112 @@
+from random import *
+from pygame import *
+from time import time as timer
+
+ 
+width = 700
+height = 500
+fire_play = '123.mp3'
+window = display.set_mode((width, height))
+display.set_caption('Space shoot')
+game = True
+FPS = 60
+clock = time.Clock()
+galaxy = transform.scale(image.load('fon.png'), (700, 500))
+mixer.init()
+mixer.music.load('musik.mp3')
+mixer.music.play()
+
+speed_x = 10
+speed_y = 10
+
+a = 0
+b = False
+font.init()
+font = font.Font(None, 30)
+
+#font 2 = font.Font(None, 70)
+win = font.render('Вы выиграли!', True, (0, 255, 0))
+defeat = font.render('Вы проиграли!', True, (100, 0, 0))
+class GameSprite (sprite.Sprite):
+    def __init__(self, player_image, player_x, player_y, size_x, size_y , player_speed):
+        super().__init__()
+        self.image = transform.scale(image.load(player_image), (size_x, size_y))
+        self.speed = player_speed
+        self.rect = self.image.get_rect()
+        self.rect.x = player_x
+        self.rect.y = player_y
+    def reset(self):
+        window.blit(self.image, (self.rect.x, self.rect.y))
+
+# Класс игрок
+class Player (GameSprite):
+    def update(self):
+        keys = key.get_pressed()
+        if keys[K_w] and self.rect.y < 435:
+            self.rect.y -= self.speed 
+        if keys[K_s] and self.rect.y > 5:
+            self.rect.y += self.speed 
+  
+class Player2 (GameSprite):
+    def update(self):
+        keys = key.get_pressed()
+        if keys[K_UP] and self.rect.y < 435:
+            self.rect.y -= self.speed 
+        if keys[K_DOWN] and self.rect.y > 5:
+            self.rect.y += self.speed 
+ 
+
+             
+
+Hero = Player('tennis_raketka.jpg', 50, 400, 65, 65, 10)
+Hero2 = Player2('tennis_raketka.jpg', 550, 400, 65, 65, 10)
+Ball = GameSprite('tenis.png', 350, 100, 30, 30, 10)
+
+
+
+
+finish = False
+while game:   
+    keys = key.get_pressed()
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+       
+    if finish != True:
+        window.blit(galaxy, (0, 0))        
+        Hero.reset()
+        Hero.update() 
+        Hero2.reset()
+        Hero2.update()    
+        Ball.reset()
+        Ball.update()
+        Ball.rect.x += speed_x
+        Ball.rect.y += speed_y  
+        if sprite.collide_rect(Hero2, Ball) or sprite.collide_rect(Hero, Ball):
+            speed_x *= -1
+        if Ball.rect.y > 470 or Ball.rect.y < 0:
+            speed_y *= -1
+        if Ball.rect.x > 690 or Ball.rect.x < 0:
+            speed_x *= -1
+        if Hero.speed >= 80:
+            Hero.speed = 10
+        
+
+        clock.tick(FPS)
+        display.update()
+
+
+
+
+
+    else:
+        finish = False
+        
+        Hero.speed = 10
+
+
+        time.delay(3000)
+        
+
+
+    time.delay(50)
